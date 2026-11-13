@@ -1,39 +1,67 @@
-# asifazad.com — deploy folder
+# asifazad.com
 
-Built 2026-10-05. 13 pages in the sitemap, plus a 404 page.
+Personal site of Asif Bin Azad. Static pages plus one small serverless function, deployed on Vercel from this GitHub repository.
 
-## Pages
-- `/` home (case-study pop-ups now link to their full pages; services link to their pages)
-- `/about/` the full story as a real page; arriving from "About me" plays the circle reveal on top of the home page
-- `/work/` + 6 case studies, each in four sections: Overview, Objectives, Role, Outcome
-- `/services/` + 4 service pages
-- `/api/latest` live feed function (in `vercel/functions/`)
+## What is in this repository
 
-## Deploy on Vercel
-1. Deploy this folder with the Vercel CLI (`vecel deploy --prod`) or a Git-connected site. Drag-and-drop won't build the `/api/latest` function.
-2. Point asifazad.com at the Netlify site.
-3. Check these load: `/about/`, `/work/mana-bay/`, `/services/personal-brand/`, `/sitemap.xml`, `/api/latest?src=youtube`.
+```
+public/          The website. Vercel serves this folder.
+  index.html, about-me/, experience/, digital-sage/, features/, space/, 404.html
+  assets/        Styles, scripts, images, fonts, share cards (/assets/og/)
+  robots.txt, sitemap.xml
+api/latest.js    Live feed for "Watch, read, listen" and /features (YouTube, Substack, podcast)
+vercel.json      Output folder, redirects, security and cache headers
+package.json     Marks api/ as modern JavaScript modules. No dependencies, nothing to install
+```
 
-## Google Analytics 4
-1. In Google Analytics, create a GA4 property with a Web data stream for https://asifazad.com and copy its Measurement ID (starts with `G-`).
-2. In `assets/analytics.js`, replace `G-XXXXXXXXXX` with it and redeploy. Until then the file does nothing.
-3. Visitors get an Accept / No thanks choice. GA loads only after Accept.
-4. In GA, mark `book_call_click` as a key event.
+There is no build step. Vercel serves `public/` as it is and runs `api/latest.js` as a function.
 
-Events sent: `book_call_click`, `email_click`, `community_join_click`, `about_open`, `dock_click`, `case_study_open`, `testimonial_video_play`, `content_open`, `feature_open`. Page views, scrolls and outbound clicks come from GA4's enhanced measurement. Bookings finish on cal.com, so GA records the click, not the confirmed booking.
+## Deploy (first time)
 
-## Google Search Console
-1. Add a **Domain** property for `asifazad.com` and verify it with the DNS TXT record Google gives you (add it at your domain registrar).
-2. Sitemaps: submit `sitemap.xml`.
-3. URL Inspection: request indexing for `/`, `/about/`, `/work/` and `/services/`.
+1. **Replace the repository contents.** Delete the old Netlify files (`netlify.toml`, the `netlify/` folder) and everything else from the previous upload. Add everything from this folder, keeping the structure above. Commit to the production branch (usually `main`).
+2. **Import the project.** In Vercel: Add New, Project, then pick this GitHub repository.
+3. **Check the settings.** Framework Preset: Other. Root Directory: the repository root. Build command and install command: leave empty. Output Directory: `public` (already set in `vercel.json`). No environment variables are needed. Click Deploy.
+4. **Open the preview address** Vercel gives you (`something.vercel.app`) and run the checklist below before pointing the domain.
 
-## Bing Webmaster Tools
-Sign in and use **Import from Google Search Console**. It brings the site and sitemap across.
+## Connect asifazad.com
 
-## Content still needed
-- **Shakib Khan:** missing Outcome.
-- **Bongo BOOM:** missing Overview, Objectives, Outcome. Page is set to noindex until filled.
-- **Facebook:** the dock and footer now use facebook.com/asifbazad, taken from your podcast's show notes. Confirm it's current.
+1. In the project, go to Settings, Domains, and add `asifazad.com`. Add `www.asifazad.com` when Vercel offers it, and set `www` to redirect to `asifazad.com` (the site's canonical address is the version without `www`).
+2. Vercel shows the exact DNS records on the domain card. Use those values. Typically the apex (`@`) is an A record to `76.76.21.21`, and `www` is a CNAME to the target shown on the card.
+3. At your domain registrar, delete the old Netlify records for `@` and `www` (A, ALIAS or CNAME pointing at Netlify) and remove any AAAA record on the apex. **Leave MX and TXT records alone**: they run your email (hi@asifazad.com). Do not switch the domain's nameservers to Vercel unless you first copy every existing record across.
+4. Wait for Vercel to show Valid Configuration. HTTPS is issued automatically, usually within minutes of DNS propagating.
 
-## Updating
-These pages are generated from the design artifact by a build script. Ask Claude to rebuild after content changes so every page stays in sync.
+## Checklist after each deploy
+
+| Check | Expected |
+|---|---|
+| `/` , `/about-me/` , `/experience/` , `/digital-sage/` , `/features/` , `/space/` | Each page loads, light and dark mode both work |
+| `/about` and `/about/` | Both redirect to `/about-me/` (the only About address) |
+| `/work/mana-bay/` | Redirects to `/experience/mana-bay/` |
+| `/services/digital-strategy/` | Redirects to `/digital-sage/digital-strategy/` |
+| `/api/latest?src=features` | JSON with a list of `items` |
+| `/api/latest?src=youtube` | JSON with up to four `items` |
+| `/robots.txt`, `/sitemap.xml` | Load, and the sitemap lists all 15 pages |
+| `/this-page-does-not-exist` | The custom 404 page |
+| Booking, email and social buttons | Open cal.com/asifazad/disco, a new email to hi@asifazad.com, and the right profiles |
+
+If `/api/latest` ever fails, the pages keep working: the live sections show their saved list instead.
+
+## After the domain is live
+
+- **Search Console:** add the `asifazad.com` domain property and submit `https://asifazad.com/sitemap.xml`. The old `/work/` and `/services/` addresses redirect permanently, so existing links and rankings carry over.
+- **Share previews:** run the home page through Facebook's Sharing Debugger (Scrape Again) and LinkedIn's Post Inspector so the new share card replaces any cached one. WhatsApp refreshes by itself.
+- **Analytics:** Google Analytics 4 is set up with Measurement ID `G-B2QGFDW302` in `public/assets/analytics.js`, and every page loads that file. Visitors see a one-line choice the first time; the tag only loads, and nothing is sent to Google, for people who click Accept. To check it, open the site, click Accept, then look for yourself in Google Analytics under Reports, Realtime. In GA, mark `book_call_click` as a key event so booking clicks count as conversions.
+
+## Making changes
+
+Every push to the production branch deploys automatically. Pushes to any other branch, and pull requests, get their own preview address, so you can check a change before it goes live.
+
+The site is generated, not hand-written, so ask Claude for content or design changes rather than editing the HTML by hand. Claude produces an updated copy of `public/`; replace the folder's contents and commit.
+
+## Live feed
+
+`api/latest.js` reads the public YouTube channel feed, the Features playlist feed, the Digital Sage Substack and the podcast feed. It needs no keys. Vercel's CDN caches each answer for 15 minutes and serves the previous copy for up to an hour while it refreshes, so the feeds are never hit on every page view. To change a source, edit the `FEEDS` list at the top of the file.
+
+## Facts to keep in sync
+
+Canonical figures, links and contact details live in the generated pages. If one changes (a campaign figure, the booking link, an email address), change it everywhere in one pass rather than page by page.

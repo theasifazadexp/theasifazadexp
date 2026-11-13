@@ -7,10 +7,10 @@ Built 2026-10-05. 13 pages in the sitemap, plus a 404 page.
 - `/about/` the full story as a real page; arriving from "About me" plays the circle reveal on top of the home page
 - `/work/` + 6 case studies, each in four sections: Overview, Objectives, Role, Outcome
 - `/services/` + 4 service pages
-- `/api/latest` live feed function (in `netlify/functions/`)
+- `/api/latest` live feed function (in `vercel/functions/`)
 
-## Deploy on Netlify
-1. Deploy this folder with the Netlify CLI (`netlify deploy --prod`) or a Git-connected site. Drag-and-drop won't build the `/api/latest` function.
+## Deploy on Vercel
+1. Deploy this folder with the Vercel CLI (`vecel deploy --prod`) or a Git-connected site. Drag-and-drop won't build the `/api/latest` function.
 2. Point asifazad.com at the Netlify site.
 3. Check these load: `/about/`, `/work/mana-bay/`, `/services/personal-brand/`, `/sitemap.xml`, `/api/latest?src=youtube`.
 

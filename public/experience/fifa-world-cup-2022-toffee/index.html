@@ -135,5 +135,9 @@ var map={};links.forEach(function(a){map[a.getAttribute('href').slice(1)]=a;});
 var io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;links.forEach(function(a){a.classList.remove('on');});var a=map[e.target.id];if(a)a.classList.add('on');});},{rootMargin:'-30% 0px -60% 0px'});
 [].forEach.call(document.querySelectorAll('.sp-art section[id]'),function(s){io.observe(s);});})();
 </script>
+<script>
+window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>
